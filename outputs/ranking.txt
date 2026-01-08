@@ -1,0 +1,12 @@
+1.000000	data/test/test_anom_01.png
+1.000000	data/test/test_anom_04.png
+1.000000	data/test/test_anom_05.png
+0.999992	data/test/test_anom_02.png
+0.999927	data/test/test_anom_00.png
+0.998030	data/test/test_anom_03.png
+0.996992	data/test/test_normal_03.png
+0.995579	data/test/test_normal_05.png
+0.993987	data/test/test_normal_04.png
+0.993314	data/test/test_normal_02.png
+0.992034	data/test/test_normal_00.png
+0.990574	data/test/test_normal_01.png
