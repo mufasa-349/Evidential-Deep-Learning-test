@@ -1,215 +1,215 @@
 # Evidential AnomalyDINO - Few-Shot Unsupervised Anomaly Detection
 
-Endüstriyel görüntü tabanlı anomali tespiti için evidential deep learning yaklaşımı. Az sayıda normal görüntü ile çalışan, unsupervised (anomali örneği gerektirmeyen) bir sistem.
+Industrial image-based anomaly detection using evidential deep learning approach. A system that works with a small number of normal images, unsupervised (does not require anomaly examples).
 
-## 🎯 Proje Özeti
+## 🎯 Project Summary
 
-Bu proje, **DINOv2** (Vision Transformer) ve **Memory Bank** yaklaşımını kullanarak, sadece normal görüntülerden öğrenerek anomali tespiti yapar. Evidential Deep Learning ile epistemic uncertainty hesaplayarak, modelin ne kadar emin olduğunu da gösterir.
+This project uses **DINOv2** (Vision Transformer) and **Memory Bank** approach to detect anomalies by learning only from normal images. It also shows how confident the model is by calculating epistemic uncertainty through Evidential Deep Learning.
 
-### Temel Özellikler
+### Key Features
 
-- ✅ **Few-shot Learning**: Az sayıda normal görüntü ile çalışır (8 görüntü yeterli)
-- ✅ **Unsupervised**: Anomali örneği gerektirmez
-- ✅ **Pre-trained Model**: DINOv2 kullanır (transfer learning)
-- ✅ **Pixel-level Localization**: Anomali bölgelerini heatmap ile gösterir
-- ✅ **Uncertainty Quantification**: Epistemic uncertainty hesaplar
+- ✅ **Few-shot Learning**: Works with a small number of normal images (8 images sufficient)
+- ✅ **Unsupervised**: Does not require anomaly examples
+- ✅ **Pre-trained Model**: Uses DINOv2 (transfer learning)
+- ✅ **Pixel-level Localization**: Shows anomaly regions with heatmaps
+- ✅ **Uncertainty Quantification**: Calculates epistemic uncertainty
 
-## 🔬 Kullanılan Yöntem
+## 🔬 Methodology
 
 ### 1. Feature Extraction (DINOv2)
-- Her görüntü 14×14 patch'lere bölünür
-- DINOv2 ile her patch 384 boyutlu özellik vektörüne dönüştürülür
-- Pre-trained model kullanılır (eğitim gerekmez)
+- Each image is divided into 14×14 patches
+- Each patch is converted to a 384-dimensional feature vector using DINOv2
+- Pre-trained model is used (no training required)
 
-### 2. Memory Bank Oluşturma
-- Normal görüntülerden çıkarılan tüm patch embeddings bir "memory bank"te saklanır
-- Örnek: 8 normal görüntü → ~11,200 patch embedding
+### 2. Memory Bank Construction
+- All patch embeddings extracted from normal images are stored in a "memory bank"
+- Example: 8 normal images → ~11,200 patch embeddings
 
-### 3. Anomali Tespiti
-- Test görüntüsündeki her patch için memory bank'teki en yakın normal patch bulunur
-- Distance değerleri → Evidence → Dirichlet parameters → Uncertainty/Belief maps
+### 3. Anomaly Detection
+- For each patch in the test image, the nearest normal patch in the memory bank is found
+- Distance values → Evidence → Dirichlet parameters → Uncertainty/Belief maps
 
 ### 4. Evidential Inference
 - Evidence = exp(-γ × distance²)
 - Uncertainty = 2 / (evidence + 2)
-- Yüksek uncertainty = Yüksek anomali olasılığı
+- High uncertainty = High anomaly probability
 
-## 📊 Veri Seti
+## 📊 Dataset
 
-### Normal Görüntüler (Training)
-`data/normal/` klasöründe 8 adet normal fabrika parçası görüntüsü:
-- Metal plaka benzeri yapılar
-- Düzenli delikler
-- Tekstürlü yüzeyler
+### Normal Images (Training)
+8 normal factory part images in `data/normal/` folder:
+- Metal plate-like structures
+- Regular holes
+- Textured surfaces
 
-**Örnek Normal Görüntü:**
+**Example Normal Image:**
 ```
 data/normal/normal_00.png
 ```
 
-### Test Görüntüleri
-`data/test/` klasöründe 12 adet test görüntüsü:
-- **6 Normal**: Normal parçalar (test_normal_00.png - test_normal_05.png)
-- **6 Anomali**: Anomali içeren parçalar (test_anom_00.png - test_anom_05.png)
+### Test Images
+12 test images in `data/test/` folder:
+- **6 Normal**: Normal parts (test_normal_00.png - test_normal_05.png)
+- **6 Anomaly**: Parts containing anomalies (test_anom_00.png - test_anom_05.png)
 
-**Anomali Türleri:**
-- Çizik (scratch)
-- Eksik delik (missing hole)
-- Ekstra leke (blob)
-- Yanık izi (burn mark)
+**Anomaly Types:**
+- Scratch
+- Missing hole
+- Extra blob
+- Burn mark
 
-**Örnek Anomali Görüntüsü:**
+**Example Anomaly Images:**
 ```
-data/test/test_anom_00.png  (Çizik anomali)
-data/test/test_anom_02.png  (Eksik delik anomali)
+data/test/test_anom_00.png  (Scratch anomaly)
+data/test/test_anom_02.png  (Missing hole anomaly)
 ```
 
-## 🚀 Kurulum
+## 🚀 Installation
 
-### Gereksinimler
+### Requirements
 ```bash
 Python 3.8+
 ```
 
-### Adımlar
+### Steps
 
-1. **Repository'yi klonlayın:**
+1. **Clone the repository:**
 ```bash
 git clone <repository-url>
 cd Evidential-Deep-Learning-test
 ```
 
-2. **Virtual environment oluşturun:**
+2. **Create virtual environment:**
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 ```
 
-3. **Paketleri yükleyin:**
+3. **Install packages:**
 ```bash
 pip install -r requirements.txt
 ```
 
-### Gerekli Paketler
+### Required Packages
 - `torch` >= 2.0.0
 - `torchvision` >= 0.15.0
 - `Pillow` >= 10.0.0
 - `numpy` >= 1.24.0
-- `faiss-cpu` >= 1.7.4 (opsiyonel, hızlandırma için)
+- `faiss-cpu` >= 1.7.4 (optional, for acceleration)
 
-## 💻 Kullanım
+## 💻 Usage
 
-### Temel Kullanım
+### Basic Usage
 
 ```bash
 python evidential_anomalydino.py
 ```
 
-Script otomatik olarak:
-1. `data/normal/` klasöründeki normal görüntülerden memory bank oluşturur
-2. `data/test/` klasöründeki test görüntülerini analiz eder
-3. Sonuçları `outputs/` klasörüne kaydeder
+The script automatically:
+1. Creates a memory bank from normal images in `data/normal/` folder
+2. Analyzes test images in `data/test/` folder
+3. Saves results to `outputs/` folder
 
-### Çıktılar
+### Outputs
 
-Her test görüntüsü için 3 dosya oluşturulur:
+For each test image, 3 files are created:
 
 1. **`*_uncertainty.png`**: Epistemic uncertainty heatmap
-   - Yüksek değerler (beyaz) = Yüksek anomali olasılığı
-   - Düşük değerler (siyah) = Normal bölgeler
+   - High values (white) = High anomaly probability
+   - Low values (black) = Normal regions
 
-2. **`*_belief.png`**: Normal sınıfına olan inanç (belief) map
-   - Yüksek değerler = Normal olma inancı yüksek
+2. **`*_belief.png`**: Belief map for normal class
+   - High values = High confidence in being normal
 
-3. **`*_overlay_uncertainty.png`**: Orijinal görüntü üzerine uncertainty overlay
-   - Anomali bölgeleri görsel olarak vurgulanır
+3. **`*_overlay_uncertainty.png`**: Uncertainty overlay on original image
+   - Anomaly regions are visually highlighted
 
-4. **`ranking.txt`**: Tüm test görüntülerinin uncertainty skorlarına göre sıralaması
+4. **`ranking.txt`**: Ranking of all test images by uncertainty scores
 
-## 📈 Sonuçlar
+## 📈 Results
 
-### Başarılı Senaryo Örnekleri
+### Successful Scenario Examples
 
-**Anomali Tespiti:**
+**Anomaly Detection:**
 - `test_anom_01.png`: Uncertainty score = **1.0000** ✅
 - `test_anom_04.png`: Uncertainty score = **1.0000** ✅
 - `test_anom_05.png`: Uncertainty score = **1.0000** ✅
 
-**Normal Tespiti:**
+**Normal Detection:**
 - `test_normal_00.png`: Uncertainty score = **0.9920** ✅
 - `test_normal_01.png`: Uncertainty score = **0.9906** ✅
 - `test_normal_02.png`: Uncertainty score = **0.9933** ✅
 
-### Örnek Output Görselleri
+### Example Output Visualizations
 
-**Anomali Görüntüsü (test_anom_00.png):**
-- Uncertainty heatmap: Anomali bölgesi yüksek uncertainty gösterir
-- Overlay: Çizik anomali görsel olarak vurgulanır
+**Anomaly Image (test_anom_00.png):**
+- Uncertainty heatmap: Anomaly region shows high uncertainty
+- Overlay: Scratch anomaly is visually highlighted
 
-**Normal Görüntü (test_normal_00.png):**
-- Uncertainty heatmap: Düşük ve düzgün dağılım
-- Overlay: Anomali belirtisi yok
+**Normal Image (test_normal_00.png):**
+- Uncertainty heatmap: Low and uniform distribution
+- Overlay: No anomaly indication
 
-### Ranking Sonuçları
+### Ranking Results
 
-En yüksek uncertainty skorları anomali görüntülerinde:
+Highest uncertainty scores are in anomaly images:
 ```
-1.000000  test_anom_01.png  (Anomali ✅)
-1.000000  test_anom_04.png  (Anomali ✅)
-1.000000  test_anom_05.png  (Anomali ✅)
-0.999992  test_anom_02.png  (Anomali ✅)
-0.999927  test_anom_00.png  (Anomali ✅)
-0.998030  test_anom_03.png  (Anomali ✅)
+1.000000  test_anom_01.png  (Anomaly ✅)
+1.000000  test_anom_04.png  (Anomaly ✅)
+1.000000  test_anom_05.png  (Anomaly ✅)
+0.999992  test_anom_02.png  (Anomaly ✅)
+0.999927  test_anom_00.png  (Anomaly ✅)
+0.998030  test_anom_03.png  (Anomaly ✅)
 0.996992  test_normal_03.png  (Normal)
 0.995579  test_normal_05.png  (Normal)
 ...
 ```
 
-## 🔧 Yapılandırma
+## 🔧 Configuration
 
-`evidential_anomalydino.py` dosyasındaki `Config` sınıfından parametreler ayarlanabilir:
+Parameters can be adjusted from the `Config` class in `evidential_anomalydino.py`:
 
 ```python
 cfg = Config(
     device="cuda" if torch.cuda.is_available() else "cpu",
-    image_size=518,           # DINOv2 için önerilen boyut
-    patch_size=14,            # ViT-S/14 patch boyutu
-    dinov2_model="dinov2_vits14",  # Model versiyonu
-    gamma=0.01,                # Evidence mapping parametresi
+    image_size=518,           # Recommended size for DINOv2
+    patch_size=14,            # ViT-S/14 patch size
+    dinov2_model="dinov2_vits14",  # Model version
+    gamma=0.01,                # Evidence mapping parameter
     agg="max",                 # Image-level score aggregation
-    out_dir="outputs",         # Çıktı klasörü
-    save_heatmaps=True,        # Heatmap kaydetme
+    out_dir="outputs",         # Output folder
+    save_heatmaps=True,        # Save heatmaps
 )
 ```
 
-## 📚 Teknik Detaylar
+## 📚 Technical Details
 
-### Model Mimarisi
+### Model Architecture
 - **Backbone**: DINOv2 ViT-S/14 (384 embedding dimension)
-- **Memory Bank**: L2 distance tabanlı nearest-neighbor search
-- **Evidential Layer**: Dirichlet distribution parametreleri
+- **Memory Bank**: L2 distance-based nearest-neighbor search
+- **Evidential Layer**: Dirichlet distribution parameters
 
-### Performans
-- **Memory Bank Oluşturma**: ~2-3 saniye (8 görüntü)
-- **Inference**: ~1-2 saniye/görüntü (CPU)
-- **Toplam Test Süresi**: ~15-20 saniye (12 görüntü)
+### Performance
+- **Memory Bank Construction**: ~2-3 seconds (8 images)
+- **Inference**: ~1-2 seconds/image (CPU)
+- **Total Test Time**: ~15-20 seconds (12 images)
 
-## 🎓 Referanslar
+## 🎓 References
 
 - DINOv2: [Facebook Research](https://github.com/facebookresearch/dinov2)
 - Evidential Deep Learning: Few-Shot Unsupervised Anomaly Detection
-- Memory Bank yaklaşımı: PatchCore, PaDiM gibi yöntemlerden ilham alınmıştır
+- Memory Bank approach: Inspired by methods like PatchCore, PaDiM
 
-## 📝 Notlar
+## 📝 Notes
 
-- İlk çalıştırmada DINOv2 modeli otomatik olarak indirilir (~300MB)
-- macOS'ta FAISS kullanımı OpenMP çakışması nedeniyle devre dışı (PyTorch fallback aktif)
-- GPU kullanımı için CUDA kurulu olmalı ve `device="cuda"` ayarlanmalı
+- DINOv2 model is automatically downloaded on first run (~300MB)
+- FAISS usage is disabled on macOS due to OpenMP conflicts (PyTorch fallback active)
+- For GPU usage, CUDA must be installed and `device="cuda"` should be set
 
-## 👥 Katkıda Bulunanlar
+## 👥 Contributors
 
-Proje geliştirme aşamasındadır.
+Project is under development.
 
 ---
 
-**Lisans**: MIT (veya belirtilen lisans)
+**License**: MIT (or specified license)
