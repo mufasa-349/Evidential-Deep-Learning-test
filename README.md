@@ -206,10 +206,5 @@ cfg = Config(
 - FAISS usage is disabled on macOS due to OpenMP conflicts (PyTorch fallback active)
 - For GPU usage, CUDA must be installed and `device="cuda"` should be set
 
-## 👥 Contributors
-
-Project is under development.
-
----
-
-**License**: MIT (or specified license)
+-----
+**License**: 
